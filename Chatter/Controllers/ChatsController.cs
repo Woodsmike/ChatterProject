@@ -19,6 +19,24 @@ namespace Chatter.Controllers
         {
             return View(db.Chats.ToList());
         }
+        public JsonResult TestJson()
+        {
+            string jsonTest = "{ \"firstName\": \"Bob\",\"lastName\": \"Sauce\", " +
+                "\"children\": [{\"firstName\": \"Barbie\", \"age\": 19 }," +
+                "{\"firstName\": \"Ron\", \"age\": null }] }";
+
+            return Json(jsonTest, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult TestJsonOne()
+        {
+            string jsonTestOne = "{ \"firstName\": \"Bob\",\"lastName\": \"Sauce\", " +
+                "\"children\": [{\"firstName\": \"Barbie\", \"age\": 19 }," +
+                "{\"firstName\": \"Ron\", \"age\": null }] }";
+
+            return Json(jsonTestOne, JsonRequestBehavior.AllowGet);
+        }
+
 
         // GET: Chats/Details/5
         public ActionResult Details(int? id)

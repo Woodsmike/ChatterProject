@@ -12,18 +12,48 @@
 
 <div id="response"></div>
 <div id="responseOne"></div>
+<div id="responseFour"></div>
+<div id="responseTwo"></div>
+ <div id="responseThree"></div>
+
 <button id="getChats" class="btn btn-primary">Get Chats</button>
 
 @section Scripts {
     <script>
-        var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
+        $("#getChats").click(function () {
+            $.get("@Url.Action("TestJson","Chats")", function (serverResponse) {
+                var jsonTest = JSON.parse(serverResponse);
+                console.log(jsonTest);
+                jsonTest.age = "45";
+                var retire = "65";
+                jsonTest.age = "36";
+                var years = retire - jsonTest.age;
+                jsonTest.retire = years;
+                $("#response").text(jsonTest.firstName);
+                $("#responseOne").text(jsonTest.age);
+                $("#responseFour").text(jsonTest.retire);
+                $("#responseTwo").text(jsonTest.children[0].firstName);
+                $("#responseThree").text(jsonTest.children[0].age);
+                
+            });
+        });
 
-        //now some jQuery
-        $("#response").text(jsonTest.children[0].firstName);
 
-        var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
+        //AJAX request using jQuery as a helper
+   	//Notice this combines Razor syntax (@*@Url.Action()*@) in order to
+   	//have the compiler figure out the exact path of the controller,
+   	//alongside of jQuery.
+    	@*$.get("@Url.Action("TestJson","Chats")", function (response) {
+            alert(response);
+    	});*@
+        //var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
 
-        $("#responseOne").text(jsonTestOne.children[0].age);
+        ////now some jQuery
+        //$("#response").text(jsonTest.children[0].firstName);
+
+        //var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
+
+        //$("#responseOne").text(jsonTestOne.children[0].age);
 
     </script>
 }
