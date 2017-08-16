@@ -10,3 +10,20 @@
     @Html.ActionLink("Create New", "Create")
 </p>
 
+<div id="response"></div>
+<div id="responseOne"></div>
+<button id="getChats" class="btn btn-primary">Get Chats</button>
+
+@section Scripts {
+    <script>
+        var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
+
+        //now some jQuery
+        $("#response").text(jsonTest.children[0].firstName);
+
+        var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
+
+        $("#responseOne").text(jsonTestOne.children[0].age);
+
+    </script>
+}
