@@ -9,51 +9,84 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-
-<div id="response"></div>
-<div id="responseOne"></div>
-<div id="responseFour"></div>
-<div id="responseTwo"></div>
- <div id="responseThree"></div>
-
-<button id="getChats" class="btn btn-primary">Get Chats</button>
-
+<div class="row">
+    <div class="col-md-6">
+        <ul class="refresh">
+            <li id="response"></li>
+        </ul>
+        <button id="getChats" class="btn btn-primary">Get Chats</button>
+    </div>
+    <button class="button" id="postChat">Post Chat</button>
+</div>
 @section Scripts {
-    <script>
-        $("#getChats").click(function () {
-            $.get("@Url.Action("TestJson","Chats")", function (serverResponse) {
-                var jsonTest = JSON.parse(serverResponse);
-                console.log(jsonTest);
-                jsonTest.age = "45";
-                var retire = "65";
-                jsonTest.age = "36";
-                var years = retire - jsonTest.age;
-                jsonTest.retire = years;
-                $("#response").text(jsonTest.firstName);
-                $("#responseOne").text(jsonTest.age);
-                $("#responseFour").text(jsonTest.retire);
-                $("#responseTwo").text(jsonTest.children[0].firstName);
-                $("#responseThree").text(jsonTest.children[0].age);
-                
+    <script>  
+        $(document).ready(function () {           
+            $("#getChats").on("click", function () {
+                $("#response").empty();
+                $.get("@Url.Action("TestJson","Chats")", function (serverResponse) {
+                    var jsonTest = JSON.parse(serverResponse);
+                    console.log(jsonTest);
+
+                    var ul = $("<ul>", { id: "messageList", "class": "bg-primary" });
+                    //ul.click(function () { alert("ul was clicked!"); });
+                    $("#response").append(ul);
+
+                    $.each(jsonTest, function (inx, val) {
+                        var myBgClass = ["bg-info", "bg-warning"];
+                        var li = $("<li>", { id: "li" + inx, "class": myBgClass[inx % 2] });
+                        li.text(val.Message + " " + val.UserName);
+                        //li.click(function () { alert("my index is " + inx); });
+                        ul.append(li); //similar to $("#messageList").append(li), but more
+                        //efficient b/c it doesn't need to query for the list
+                        //again.
+                    });
+
+
+                });
+
             });
+            $("#postChat").click(function () {               
+                    var Message = prompt("Type your chat", " ");
+                
+                    $.post("@Url.Action("PostChats","Chats")", { Message, Message });
+                        //function (serverResponse) {
+                //    var jsonPost = JSON.parse(serverResponse);
+                //    console.log(jsonPost);
+
+                //    var ul = $("<ul>", { id: "messageList", "class": "bg-primary" });
+                //    ul.click(function () { alert("ul was clicked!"); });
+                //    $("#response").append(ul);
+
+                //    $.each(jsonPost, function (inx, val) {
+                //        var myBgClass = ["bg-info", "bg-warning"];
+                //        var li = $("<li>", { id: "li" + inx, "class": myBgClass[inx % 2] });
+                //        li.text(val.Message + " " + val.UserName);
+                //        li.click(function () { alert("my index is " + inx); });
+                //        ul.append(li); //similar to $("#messageList").append(li), but more
+                //        //efficient b/c it doesn't need to query for the list
+                //        //again.
+                //    });
+
+                //});
+            });
+
         });
 
-
-        //AJAX request using jQuery as a helper
-   	//Notice this combines Razor syntax (@*@Url.Action()*@) in order to
-   	//have the compiler figure out the exact path of the controller,
-   	//alongside of jQuery.
-    	@*$.get("@Url.Action("TestJson","Chats")", function (response) {
-            alert(response);
-    	});*@
-        //var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
-
-        ////now some jQuery
-        //$("#response").text(jsonTest.children[0].firstName);
-
-        //var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
-
-        //$("#responseOne").text(jsonTestOne.children[0].age);
-
+        
     </script>
 }
+@*//AJAX request using jQuery as a helper
+   	//Notice this combines Razor syntax (@Url.Action()) in order to
+    //have the compiler figure out the exact path of the controller,
+    //alongside of jQuery.
+    $.get("@Url.Action("TestJson","Chats")", function (response) {
+            alert(response);
+        });
+    //var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
+
+    ////now some jQuery
+    //$("#response").text(jsonTest.children[0].firstName);
+
+    //var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
+
+    //$("#responseOne").text(jsonTestOne.children[0].age);*@
