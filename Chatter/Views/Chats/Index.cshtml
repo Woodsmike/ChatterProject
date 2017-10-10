@@ -1,92 +1,135 @@
 ﻿@model IEnumerable<Chatter.Models.Chat>
 
-@{
-    ViewBag.Title = "Index";
-}
 
-<h2>Index</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<div class="row">
-    <div class="col-md-6">
-        <ul class="refresh">
-            <li id="response"></li>
-        </ul>
-        <button id="getChats" class="btn btn-primary">Get Chats</button>
+<div class="container-fluid" style="padding-top:35px;">
+    @*<div class="row">*@
+
+    <div class="col-md-6 col-md-offset-3" style="padding-top:35px;">
+
+        <form action="#" method="post" role="form" enctype="multipart/form-data" class="looks-box">
+
+            <div class="share">
+                <div class="arrow"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading"><i class="fa fa-file"></i> Update Status</div>
+                    <div class="panel-body">
+                        <div class="">
+                            <textarea name="message" cols="40" rows="10" id="status_message" class="form-control message" style="height: 62px; overflow: hidden;" placeholder="What's on your mind ?"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default"><i class="icon icon-map-marker"></i> Location</button>
+                                        <button type="button" class="btn btn-default"><i class="icon icon-picture"></i> Photo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <select name="privacy" class="form-control privacy-dropdown pull-left input-sm">
+                                        <option value="1" selected="selected">Public</option>
+                                        <option value="2">Only my friends</option>
+                                        <option value="3">Only me</option>
+                                    </select>
+                                    <button class="btn btn-primary" id="postChat" style="float:right">Post</button>
+                                    @*<a class="photos" href="#"><i class="icon icon-camera"></i> Add photos</a>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-    <button class="button" id="postChat">Post Chat</button>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <section id="chatsSec"></section>
+            @*<h4 id="response"></h4>*@
+        </div>
+    </div>
+    
 </div>
+
+
+
+
 @section Scripts {
-    <script>  
-        $(document).ready(function () {           
-            $("#getChats").on("click", function () {
-                $("#response").empty();
+    <script>
+        $(document).ready(function () {
+            //$("#getChats").on("click", function () {
+            $("#chatsSec").empty();
+            $('.status').click(function () { $('.arrow').css("left", 0); });
+            $('.photos').click(function () { $('.arrow').css("left", 146); });
+
                 $.get("@Url.Action("TestJson","Chats")", function (serverResponse) {
                     var jsonTest = JSON.parse(serverResponse);
                     console.log(jsonTest);
 
-                    var ul = $("<ul>", { id: "messageList", "class": "bg-primary" });
-                    //ul.click(function () { alert("ul was clicked!"); });
-                    $("#response").append(ul);
+                    
+                    $.each(jsonTest, function (inx, val) {
+                        var userNameClass = ["userName , h5"];
+                        var h5 = $("<h5>", { id: "h5" + inx, "class": userNameClass });
+
+                        var messageClass = ["message"];
+                        var p = $("<p>", { id: "p" + inx, "class": messageClass });
+
+                        var divClass = ["messageDiv , textBox"];
+                        var div = $("<div>", { id: "div" + inx, "class": divClass });
+
+                        var chatDate = ["chatDate.toString().substring(0,6)"];                        
+                        var h6 = $("<h6>", { id: "h6" + inx, "class": chatDate });
+
+                        h5.html("<h5 class=\"userName\">" + val.UserName + "</h5>");
+                        p.html("<p class=\"message\">" + val.Message + "</p>");
+                        h6.html("<h6 class=\"chatDate\">" + val.ChatDate + "</h6>");
+                        div.html(p.html() + h5.html() + h6.html());
+                      
+                        $("#chatsSec").prepend(div);
+                        $("#chatsSec").prepend("<br />");
+                    });
+                });
+            });
+            $("#postChat").click(function () {
+               
+                var Message = $("textarea").val();
+
+                $.post("@Url.Action("PostChats","Chats")", { Message, Message });
+
+
+                $("#chatsSec").empty();
+                $.get("@Url.Action("TestJson","Chats")", function (serverResponse) {
+                    var jsonTest = JSON.parse(serverResponse);
+                    console.log(jsonTest);
+
+                  
 
                     $.each(jsonTest, function (inx, val) {
-                        var myBgClass = ["bg-info", "bg-warning"];
-                        var li = $("<li>", { id: "li" + inx, "class": myBgClass[inx % 2] });
-                        li.text(val.Message + " " + val.UserName);
-                        //li.click(function () { alert("my index is " + inx); });
-                        ul.append(li); //similar to $("#messageList").append(li), but more
-                        //efficient b/c it doesn't need to query for the list
-                        //again.
+                        var userNameClass = ["userName , h5"];
+                        var h5 = $("<h5>", { id: "h5" + inx, "class": userNameClass });
+
+                        var messageClass = ["message"];
+                        var p = $("<p>", { id: "p" + inx, "class": messageClass });
+
+                        var divClass = ["messageDiv , textBox"];
+                        var div = $("<div>", { id: "div" + inx, "class": divClass });
+
+                        
+                        var chatDate = ["chatDate.toString().substring(0,6)"];                      
+                        var h6 = $("<h6>", { id: "h6" + inx, "class": chatDate });
+
+                        h5.html("<h5 class=\"userName\">" + val.UserName + "</h5>");
+                        p.html("<p class=\"message\">" + val.Message + "</p>");
+                        h6.html("<h6 class=\"chatDate\">" + val.ChatDate + "</h6>");
+                        div.html(p.html() + h5.html() + h6.html());
+                  
+                        $("#chatsSec").prepend(div); 
+                        $("#chatsSec").prepend("<br />");
                     });
-
-
-                });
-
-            });
-            $("#postChat").click(function () {               
-                    var Message = prompt("Type your chat", " ");
-                
-                    $.post("@Url.Action("PostChats","Chats")", { Message, Message });
-                        //function (serverResponse) {
-                //    var jsonPost = JSON.parse(serverResponse);
-                //    console.log(jsonPost);
-
-                //    var ul = $("<ul>", { id: "messageList", "class": "bg-primary" });
-                //    ul.click(function () { alert("ul was clicked!"); });
-                //    $("#response").append(ul);
-
-                //    $.each(jsonPost, function (inx, val) {
-                //        var myBgClass = ["bg-info", "bg-warning"];
-                //        var li = $("<li>", { id: "li" + inx, "class": myBgClass[inx % 2] });
-                //        li.text(val.Message + " " + val.UserName);
-                //        li.click(function () { alert("my index is " + inx); });
-                //        ul.append(li); //similar to $("#messageList").append(li), but more
-                //        //efficient b/c it doesn't need to query for the list
-                //        //again.
-                //    });
-
-                //});
-            });
-
+              });
         });
-
-        
     </script>
 }
-@*//AJAX request using jQuery as a helper
-   	//Notice this combines Razor syntax (@Url.Action()) in order to
-    //have the compiler figure out the exact path of the controller,
-    //alongside of jQuery.
-    $.get("@Url.Action("TestJson","Chats")", function (response) {
-            alert(response);
-        });
-    //var jsonTest = { "firstName": "Bob", "lastName": "Sauce", "children": [{ "firstName": "Barbie", "age": 19 }, { "firstName": "Ron", "age": null }] }
-
-    ////now some jQuery
-    //$("#response").text(jsonTest.children[0].firstName);
-
-    //var jsonTestOne = { "firstName": "Mike", "lastName": "Woods", "children": [{ "firstName": "Emma", "age": 14 }, { "firstName": "Owen", "age": 17 }] }
-
-    //$("#responseOne").text(jsonTestOne.children[0].age);*@

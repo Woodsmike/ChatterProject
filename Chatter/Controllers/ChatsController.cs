@@ -21,6 +21,12 @@ namespace Chatter.Controllers
         {
             return View(db.Chats.ToList());
         }
+        public int RecursiveTest(int number)
+        {
+            return (number == 0) ? 0 : RecursiveTest(number - 1) + number;
+
+        }
+
         //string jsonTest = "";
         public JsonResult TestJson()
         {
@@ -67,14 +73,17 @@ namespace Chatter.Controllers
             string currentUserId = User.Identity.GetUserId();
             chat.AspNetUsersID = currentUserId;
             chat.AspNetUser = db.AspNetUsers.FirstOrDefault(x => x.Id == currentUserId);
-          
-           if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
                 db.Chats.Add(chat);
                 db.SaveChanges();
-               }
+            }
+
             return new JsonResult() { Data = JsonConvert.SerializeObject(chat.ChatID), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+
         }
+
 
 
         // GET: Chats/Details/5
@@ -105,7 +114,7 @@ namespace Chatter.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ChatID,AspNetUsersID,Message,ChatDate,LikeID")] Chat chat)
         {
-            
+
             if (ModelState.IsValid)
             {
                 string AspNetUsersId = User.Identity.GetUserId();
